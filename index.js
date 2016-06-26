@@ -26,7 +26,7 @@ vectorWatch.on('config', function(event, response) {
 vectorWatch.on('subscribe', function(event, response) {
     // your stream was added to a watch face
     logger.info('on subscribe');
-    logger.info(event);
+    logger.info(event.userSettings);
 
     var time = getCurrentTime();    
 
