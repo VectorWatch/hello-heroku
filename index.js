@@ -17,15 +17,15 @@ var minutes = ['', 'five', 'ten', 'quarter', 'twenty', 'twenty five', 'half'];
 
 vectorWatch.on('config', function(event, response) {
     // your stream was just dragged onto a watch face
-    logger.info('on config');
-    logger.info(event);
+    //logger.info('on config');
+    //logger.info(event);
 
     response.send();
 });
 
 vectorWatch.on('subscribe', function(event, response) {
     // your stream was added to a watch face
-    logger.info('on subscribe');
+    //logger.info('on subscribe');
     logger.info(event.userSettings);
 
     var time = getCurrentTime();    
