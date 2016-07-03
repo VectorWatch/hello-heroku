@@ -70,6 +70,11 @@ function pushUpdates() {
     });
 }
 
+function keepAlive() {
+   var url = 'https://api.vector.watch/VectorCloud/rest/v1/stream/'+process.env.STREAM_UUID+'/webhook';
+   request(url);
+}
+
 function scheduleJob() {
     var scheduleRule = new Schedule.RecurrenceRule();
     var times = [];
@@ -78,6 +83,11 @@ function scheduleJob() {
     }
     scheduleRule.minute = times; // will execute at :15 and :45 every hour
     Schedule.scheduleJob(scheduleRule, pushUpdates);
+
+    
+    var scheduleRuleHeroku = new Schedule.RecurrenceRule();
+    scheduleRuleHeroku.minute = [0,30];
+    Schedule.scheduleJob(scheduleRuleHeroku, keepAlive);
 }
 
 vectorWatch.createServer(scheduleJob);
