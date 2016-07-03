@@ -71,8 +71,9 @@ function pushUpdates() {
 }
 
 function keepAlive() {
-   var url = 'https://api.vector.watch/VectorCloud/rest/v1/stream/'+process.env.STREAM_UUID+'/webhook';
-   request(url);
+    //A request to Vector server on the webhook endpoint will trigger an outside request for the current application
+    var url = 'https://endpoint.vector.watch/VectorCloud/rest/v1/stream/'+process.env.STREAM_UUID+'/webhook';
+    request(url);
 }
 
 function scheduleJob() {
@@ -81,10 +82,10 @@ function scheduleJob() {
     for (var i=0;i<60;i+=5) {
         times.push(i);
     }
-    scheduleRule.minute = times; // will execute at :15 and :45 every hour
+    scheduleRule.minute = times; // will execute every 5 minutes
     Schedule.scheduleJob(scheduleRule, pushUpdates);
 
-    
+    // Custom rule in order to keep the heroku server alive.
     var scheduleRuleHeroku = new Schedule.RecurrenceRule();
     scheduleRuleHeroku.minute = [0,30];
     Schedule.scheduleJob(scheduleRuleHeroku, keepAlive);
