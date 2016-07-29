@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS `UserSettings`;
+DROP TABLE IF EXISTS `AppSettings`;
+DROP TABLE IF EXISTS `Auth`;
+
 CREATE TABLE `Auth` (
   `credentialsKey` varchar(45) NOT NULL,
   `authTokens` text NOT NULL,
