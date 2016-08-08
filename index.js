@@ -35,6 +35,11 @@ vectorWatch.on('unsubscribe', function(event, response) {
     response.send();
 });
 
+vectorWatch.on('webhook', function (event, response) {
+    logger.info('Webhook!');
+    response.send();
+});
+
 function getCurrentTime() {
     var date = new Date();
     var hour = date.getHours()%12;
