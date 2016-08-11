@@ -67,9 +67,10 @@ function pushUpdates() {
         var streamText = getCurrentTime();
         logger.info('Pushing updates to ' + records.length + ' users', streamText);
 
-        for (var i=0; i < records.length; i++) {
-            vectorWatch.pushStreamValue(records[i].channelLabel, streamText);
-        }
+	records.forEach(function(record) {
+	    // record.userSettings
+            vectorWatch.pushStreamValue(record.channelLabel, streamText);
+	});
     });
 }
 
