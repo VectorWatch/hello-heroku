@@ -1,6 +1,6 @@
 {
   "name": "hello-heroku",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "start": "node index.js",
     "test": ""
@@ -16,7 +16,7 @@
   "author": "Author",
   "license": "MIT",
   "dependencies": {
-    "vectorwatch-browser": "^1.3.0",
+    "vectorwatch-sdk": "^4.0.0",
     "node-schedule": "^1.1.0",
     "vectorwatch-storageprovider": "^1.0.0",
     "vectorwatch-authprovider-oauth2": "^1.0.0",
