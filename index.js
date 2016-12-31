@@ -1,15 +1,12 @@
 "use strict";
 
-var VectorWatch = require('vectorwatch-browser');
+var VectorWatch = require('vectorwatch-sdk');
 var request = require('request');
-var Schedule = require('node-schedule');
-var StorageProvider = require('vectorwatch-storageprovider');
 
 var vectorWatch = new VectorWatch();
-var storageProvider = new StorageProvider();
-vectorWatch.setStorageProvider(storageProvider);
-
 var logger = vectorWatch.logger;
+
+var totalSchedules = 0;
 
 var hours = ['twelve', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven'];
 var minutes = ['', 'five', 'ten', 'quarter', 'twenty', 'twenty five', 'half'];
@@ -35,9 +32,25 @@ vectorWatch.on('unsubscribe', function(event, response) {
     response.send();
 });
 
-vectorWatch.on('webhook', function (event, response) {
+vectorWatch.on('webhook', function (event, response, records) {
     logger.info('Webhook!');
     response.send();
+});
+
+vectorWatch.on('schedule', function(records) {
+    var streamText = getCurrentTime();
+    logger.info('Pushing updates to ' + records.length + ' users', streamText);
+    records.forEach(function(record) {
+        // record.userSettings
+        record.pushUpdate(streamText);
+    });
+
+    // Once every 30 mins keep the heroku server alive.
+    if (totalSchedules % 6 == 0) {
+        keepAlive();
+    }
+
+    totalSchedules++;
 });
 
 function getCurrentTime() {
@@ -61,38 +74,10 @@ function getCurrentTime() {
     return time;
 }
 
-function pushUpdates() {
-    
-    storageProvider.getAllUserSettingsAsync().then(function(records) {
-        var streamText = getCurrentTime();
-        logger.info('Pushing updates to ' + records.length + ' users', streamText);
-
-	records.forEach(function(record) {
-	    // record.userSettings
-            vectorWatch.pushStreamValue(record.channelLabel, streamText);
-	});
-    });
-}
-
 function keepAlive() {
+    logger.info('keep alive'); 
+
     //A request to Vector server on the webhook endpoint will trigger an outside request for the current application
     var url = 'https://endpoint.vector.watch/VectorCloud/rest/v1/stream/'+process.env.STREAM_UUID+'/webhook';
     request(url);
 }
-
-function scheduleJob() {
-    var scheduleRule = new Schedule.RecurrenceRule();
-    var times = [];
-    for (var i=0;i<60;i+=5) {
-        times.push(i);
-    }
-    scheduleRule.minute = times; // will execute every 5 minutes
-    Schedule.scheduleJob(scheduleRule, pushUpdates);
-
-    // Custom rule in order to keep the heroku server alive.
-    var scheduleRuleHeroku = new Schedule.RecurrenceRule();
-    scheduleRuleHeroku.minute = [0,30];
-    Schedule.scheduleJob(scheduleRuleHeroku, keepAlive);
-}
-
-vectorWatch.createServer(scheduleJob);
